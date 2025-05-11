@@ -1,0 +1,45 @@
+services:
+  app:
+    build:
+      context: docker_configs/docker
+      dockerfile: Dockerfile  # Указываем путь к Dockerfile
+    container_name: php_app
+    volumes:
+      - ./app:/var/www/html
+    working_dir: /var/www/html
+    networks:
+      - app-study-network
+
+  db:
+    image: postgres:latest
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: study_db
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - app-study-network
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx_server
+    volumes:
+      - ./docker_configs/nginx/conf.d:/etc/nginx/conf.d
+      - ./app:/var/www/html
+    ports:
+      - "80:80"
+    networks:
+      - app-study-network
+    depends_on:
+      - app
+
+volumes:
+  db-data:
+
+networks:
+  app-study-network:
+    driver: bridge
