@@ -22,6 +22,7 @@ $app->options('/{routes:.+}', function ($request, $response) {
 
 // Роуты
 $app->get('/user/get/{id}', [UserController::class, 'getById']);
+$app->get('/user/search', [UserController::class, 'search']);
 $app->post('/user/register', [UserController::class, 'register']);
 $app->post('/user/login', [UserController::class, 'login']);
 

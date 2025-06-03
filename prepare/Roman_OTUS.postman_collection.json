@@ -286,6 +286,18 @@
 					"item": [
 						{
 							"name": "Регистрация нового пользователя",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
 							"request": {
 								"method": "POST",
 								"header": [
@@ -753,6 +765,128 @@
 							]
 						}
 					]
+				},
+				{
+					"name": "search",
+					"item": [
+						{
+							"name": "Поиск анкет",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/user/search?first_name={{first_name}}&last_name={{second_name}}",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"user",
+										"search"
+									],
+									"query": [
+										{
+											"key": "first_name",
+											"value": "{{first_name}}",
+											"description": "(Required) Условие поиска по имени"
+										},
+										{
+											"key": "last_name",
+											"value": "{{second_name}}",
+											"description": "(Required) Условие поиска по фамилии"
+										}
+									]
+								},
+								"description": "Поиск анкет"
+							},
+							"response": [
+								{
+									"name": "Успешные поиск пользователя",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/user/search?first_name=<string>&last_name=<string>",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"user",
+												"search"
+											],
+											"query": [
+												{
+													"key": "first_name",
+													"value": "<string>",
+													"description": "(Required) Условие поиска по имени"
+												},
+												{
+													"key": "last_name",
+													"value": "<string>",
+													"description": "(Required) Условие поиска по фамилии"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "[\n  {\n    \"id\": \"<string>\",\n    \"first_name\": \"<string>\",\n    \"second_name\": \"<string>\",\n    \"birthdate\": \"<date>\",\n    \"biography\": \"<string>\",\n    \"city\": \"<string>\"\n  },\n  {\n    \"id\": \"<string>\",\n    \"first_name\": \"<string>\",\n    \"second_name\": \"<string>\",\n    \"birthdate\": \"<date>\",\n    \"biography\": \"<string>\",\n    \"city\": \"<string>\"\n  }\n]"
+								},
+								{
+									"name": "Невалидные данные",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/user/search?first_name=<string>&last_name=<string>",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"user",
+												"search"
+											],
+											"query": [
+												{
+													"key": "first_name",
+													"value": "<string>",
+													"description": "(Required) Условие поиска по имени"
+												},
+												{
+													"key": "last_name",
+													"value": "<string>",
+													"description": "(Required) Условие поиска по фамилии"
+												}
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								}
+							]
+						}
+					]
 				}
 			]
 		}
@@ -786,27 +920,27 @@
 		},
 		{
 			"key": "first_name",
-			"value": "Иванушка",
+			"value": "Lavina",
 			"type": "string"
 		},
 		{
 			"key": "second_name",
-			"value": "Дурачек",
+			"value": "Kuhic",
 			"type": "string"
 		},
 		{
 			"key": "birthdate",
-			"value": "1980-01-01",
+			"value": "1998-02-11",
 			"type": "string"
 		},
 		{
 			"key": "biography",
-			"value": "Я родился и не брился",
+			"value": "Repellat aut iste dolores dolorum itaque",
 			"type": "string"
 		},
 		{
 			"key": "city",
-			"value": "Москва",
+			"value": "Zemlakville",
 			"type": "string"
 		},
 		{

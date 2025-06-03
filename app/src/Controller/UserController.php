@@ -58,6 +58,48 @@ class UserController
     }
 
     /**
+     * Получение пользователя по идентификатору
+     */
+    public function search(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
+    {
+        $queryParams = $request->getQueryParams();
+        $firstName = $queryParams['first_name'] ?? null;
+        $lastName = $queryParams['last_name'] ?? null;
+
+        try {
+            $sql = 'SELECT * FROM users WHERE first_name LIKE :first_name AND last_name LIKE :last_name ORDER BY id';
+
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([
+                ':first_name' => $firstName . '%',
+                ':last_name' => $lastName . '%',
+            ]);
+
+            $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (\Throwable $e) {
+            return $response->withStatus(500);
+        }
+
+        if (!$users) {
+            return $response->withStatus(404);
+        }
+
+        $result = array_map(function ($user) {
+            return [
+                'id'          => $user['id'],
+                'first_name'  => $user['first_name'],
+                'second_name' => $user['last_name'],
+                'birthdate'   => $user['birth_date'],
+                'biography'   => $user['biography'],
+                'city'        => $user['city'],
+            ];
+        }, $users);
+
+        $response->getBody()->write(json_encode($result, JSON_THROW_ON_ERROR));
+        return $response->withHeader('Content-Type', 'application/json');
+    }
+
+    /**
      * Регистрация пользователя
      */
     public function register(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
