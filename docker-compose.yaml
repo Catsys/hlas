@@ -10,17 +10,120 @@ services:
     networks:
       - app-study-network
 
-  db:
-    image: postgres:latest
-    container_name: postgres_db
+  mysql-master:
+    image: mysql:8.0
+    container_name: mysql-master
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+    command: --server-id=1  --log-bin=mysql-bin --binlog-do-db=study_db --default-authentication-plugin=mysql_native_password
+    volumes:
+      - ./db/mysql/master:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - app-study-network
+
+  mysql-slave1:
+    image: mysql:8.0
+    container_name: mysql-slave1
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+    command: --server-id=2 --relay-log=relay-log --read-only=1 --default-authentication-plugin=mysql_native_password
+    volumes:
+      - ./db/mysql/slave1:/var/lib/mysql
+    ports:
+      - "3307:3306"
+    depends_on:
+      - mysql-master
+    networks:
+      - app-study-network
+
+  mysql-slave2:
+    image: mysql:8.0
+    container_name: mysql-slave2
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+    command: --server-id=3 --relay-log=relay-log --read-only=1 --default-authentication-plugin=mysql_native_password
+    volumes:
+      - ./db/mysql/slave2:/var/lib/mysql
+    ports:
+      - "3308:3306"
+    depends_on:
+      - mysql-master
+    networks:
+      - app-study-network
+
+  mysql-simple:
+    image: mysql:8.0
+    container_name: mysql-simple
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - ./db/mysql/simple:/var/lib/mysql
+    ports:
+      - "3309:3306"
+    networks:
+      - app-study-network
+
+  maxscale:
+    image: mariadb/maxscale:latest
+    container_name: maxscale
+    restart: always
+    ports:
+      - "4000:4000"    # порт для MySQL клиентов
+      - "8989:8989"    # REST API
+    volumes:
+      - ./db/maxscale/maxscale.cnf:/etc/maxscale.cnf:ro
+#      - ./db/volumes/maxscale:/var/lib/maxscale
+    depends_on:
+      - mysql-master
+      - mysql-slave1
+      - mysql-slave2
+    networks:
+      - app-study-network
+
+  pg-master:
+    image: postgres:17
+    container_name: pg-master
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
       POSTGRES_DB: study_db
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - ./db/pg/pg-master:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    networks:
+      - app-study-network
+  pg-slave1:
+    image: postgres:17
+    container_name: pg-slave1
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: study_db
+    volumes:
+      - ./db/pg/pg-slave1:/var/lib/postgresql/data
+    ports:
+      - "5436:5432"
+    networks:
+      - app-study-network
+  pgasyncslave:
+    image: postgres:17
+    container_name: pgasyncslave
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: study_db
+    volumes:
+      - ./db/pg/pg-slave2:/var/lib/postgresql/data
+    ports:
+      - "5435:5432"
     networks:
       - app-study-network
 
@@ -36,9 +139,6 @@ services:
       - app-study-network
     depends_on:
       - app
-
-volumes:
-  db-data:
 
 networks:
   app-study-network:

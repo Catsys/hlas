@@ -1,2 +1,4 @@
 /app/vendor/
 .idea
+/db/pg/
+/db/mysql/
